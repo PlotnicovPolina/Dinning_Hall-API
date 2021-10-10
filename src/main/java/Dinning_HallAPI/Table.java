@@ -3,6 +3,9 @@ package Dinning_HallAPI;
 import java.util.ArrayList;
 
 public class Table {
+
+    private static int count = 0;
+    private int id = count++;
     private Status status;
     private Order order;
 
@@ -10,6 +13,10 @@ public class Table {
 
     Table (Status status){
         this.status =status;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public Status getStatus() {
@@ -50,7 +57,7 @@ public class Table {
     }
 
     public static ArrayList<Table> GenerateTables (int number){
-        for (int i = 0; i < number; i++) {
+        for (int i = 0; i <= number; i++) {
             tables.add(new Table(Status.FREE));
         }
         return tables;

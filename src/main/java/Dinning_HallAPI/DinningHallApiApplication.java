@@ -38,9 +38,11 @@ public class DinningHallApiApplication {
 			table.getOrder();
 		}
 		for (int i = 0; i < numOfWaiters; i++) {
-			new Waiter();
+			new Waiter(tables);
 		}
 
+		ClientGenerator clientGenerator = new ClientGenerator(tables);
+		new Thread(clientGenerator).start();
 
 	}
 
