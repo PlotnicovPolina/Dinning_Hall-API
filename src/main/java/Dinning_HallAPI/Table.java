@@ -1,6 +1,7 @@
 package Dinning_HallAPI;
 
 import java.util.ArrayList;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class Table {
 
@@ -8,6 +9,7 @@ public class Table {
     private int id = count++;
     private Status status;
     private Order order;
+    private ReentrantLock lock = new ReentrantLock();
 
     private static ArrayList<Table> tables = new ArrayList();
 
@@ -31,16 +33,7 @@ public class Table {
         return tables;
     }
 
-    public void getOrder(){
-        System.out.print("ID: " + order.getId());
-        System.out.print("\nItems: ");
-        for (int item: order.getItems()) {
-            System.out.print(item + " ");
-        }
-        System.out.println("\nPriority: " + order.getPriority() + "\nMax_Wait: " + order.getMax_wait() + "\n");
-    }
-
-    public void createOrder () {
+    public Order createOrder () {
         int numberOfItems = (int) (Math.random()*5+1);
         int[] items = new int[numberOfItems];
         for (int i = 0; i < numberOfItems; i++){
@@ -52,15 +45,7 @@ public class Table {
             if (TimePreparation(item) > maxTimePreparation) maxTimePreparation = TimePreparation(item);
         }
         float maxWait = (float) (maxTimePreparation * 1.3);
-        order = new Order(items, priority, maxWait);
-
-    }
-
-    public static ArrayList<Table> GenerateTables (int number){
-        for (int i = 0; i <= number; i++) {
-            tables.add(new Table(Status.FREE));
-        }
-        return tables;
+        return order = new Order(items, priority, maxWait, id);
     }
 
     private int TimePreparation (int id){
@@ -81,6 +66,14 @@ public class Table {
                 timePreparation = 15;
         }
         return timePreparation;
+    }
+
+    public boolean tryLock(){
+        return lock.tryLock();
+    }
+
+    public void unLock(){
+        lock.unlock();
     }
 }
 

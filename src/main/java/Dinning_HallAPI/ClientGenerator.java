@@ -15,7 +15,7 @@ public class ClientGenerator implements Runnable{
 
             if (tables.get(random).getStatus() == Status.FREE){
                 tables.get(random).setStatus(Status.READY);
-                System.out.println("Table " + tables.get(random).getId() + " is free!");
+                System.out.println("Table " + tables.get(random).getId() + " is READY!");
             }
             try {
                 Thread.sleep(700);
