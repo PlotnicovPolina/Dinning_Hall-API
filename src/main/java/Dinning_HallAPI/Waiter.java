@@ -1,12 +1,14 @@
 package Dinning_HallAPI;
 
-import org.json.JSONObject;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 public class Waiter implements Runnable {
     private int id = count++;
@@ -14,6 +16,7 @@ public class Waiter implements Runnable {
     private ArrayList<Table> tables;
     private ArrayList<Order> orders = new ArrayList<>();
     private static final  String POST_API_URL = "http://localhost:8081/order";
+    private static final TimeUnit unit = DinningHallApiApplication.getUnit();
 
     Waiter (ArrayList<Table> tables)
     {
@@ -24,18 +27,6 @@ public class Waiter implements Runnable {
         return id;
     }
 
-    public void getOrders(){
-        for (Order order:orders) {
-            System.out.println("Table ID" + order.getTable_id());
-            System.out.print("ID: " + order.getOrder_id());
-            System.out.print("\nItems: ");
-            for (int item: order.getItems()) {
-                System.out.print(item + " ");
-            }
-            System.out.println("\nPriority: " + order.getPriority() + "\nMax_Wait: " + order.getMax_wait() + "\n");
-        }
-    }
-
     @Override
     public void run() {
         while (true){
@@ -44,7 +35,7 @@ public class Waiter implements Runnable {
                 if (table.getStatus() == Status.READY && table.tryLock() ){
                     int random = (int) (Math.random()*2+2);
                     try {
-                        Thread.sleep(random*1000);
+                        unit.sleep(random);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -54,14 +45,13 @@ public class Waiter implements Runnable {
                     orders.add(order);
                     post(order);
                     table.setStatus(Status.WAIT);
-                    System.out.println("Waiter ID:" + id);
-                    getOrders();
+                    System.out.println(order);
                     System.out.println("Table " + table.getId() + " is wait!");
                     table.unLock();
                 }
             }
             try {
-                Thread.sleep(700);
+                unit.sleep(1);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -69,11 +59,17 @@ public class Waiter implements Runnable {
     }
 
     private void post(Order order){
-        JSONObject json = new JSONObject(order);
+        ObjectMapper mapper = new ObjectMapper();
+        String json = null;
+        try {
+            json = mapper.writeValueAsString(order);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<String> httpEntity = new HttpEntity<>(json.toString(),httpHeaders);
+        HttpEntity<String> httpEntity = new HttpEntity<>(json,httpHeaders);
         restTemplate.postForObject(POST_API_URL, httpEntity, String.class);
     }
 }
