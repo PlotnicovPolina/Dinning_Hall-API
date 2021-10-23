@@ -1,8 +1,12 @@
 package Dinning_HallAPI;
 
+import org.springframework.util.StopWatch;
+
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 public class ClientGenerator implements Runnable{
+    private static final TimeUnit unit = DinningHallApiApplication.getUnit();
     private ArrayList<Table> tables;
     ClientGenerator(ArrayList<Table>tables){
         this.tables = tables;
@@ -18,7 +22,7 @@ public class ClientGenerator implements Runnable{
                 System.out.println("Table " + tables.get(random).getId() + " is READY!");
             }
             try {
-                Thread.sleep(700);
+                unit.sleep(1);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

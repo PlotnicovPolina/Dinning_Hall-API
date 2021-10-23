@@ -2,24 +2,18 @@ package Dinning_HallAPI;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
-@RestController
 @SpringBootApplication
 public class DinningHallApiApplication {
 
-
-	@GetMapping("/message")
-	public String getMessage() {
-		return "Hello govno!!";
-	}
 	public static ArrayList<Table> tables = new ArrayList<>();
 	public static ArrayList<Waiter> waiters = new ArrayList<>();
+	private static TimeUnit unit = TimeUnit.SECONDS;
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		SpringApplication.run(DinningHallApiApplication.class, args);
 		GenerateTables(5);
 		GenerateWaiters(3);
@@ -41,6 +35,10 @@ public class DinningHallApiApplication {
 		for (int i = 0; i <= number; i++) {
 			waiters.add(new Waiter(tables));
 		}
+	}
+
+	public static TimeUnit getUnit() {
+		return unit;
 	}
 }
 
