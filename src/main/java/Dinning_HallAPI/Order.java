@@ -130,4 +130,15 @@ public class Order {
     public void setCooking_details(ArrayList<Cooking_Detail> cooking_details) {
         this.cooking_details = cooking_details;
     }
+
+    @Override
+    public boolean equals(Object order) {
+        if (this == order) return true;
+        if ( order == null || getClass() != order.getClass()) return false;
+        Order that = (Order) order;
+        return order_id == that.order_id && table_id == that.table_id && waiter_id == that.waiter_id
+                &&  Arrays.toString(items).equals( Arrays.toString(that.items)) &&
+                priority == that.priority && max_wait == that.max_wait &&
+                pick_up_time == that.pick_up_time;
+    }
 }

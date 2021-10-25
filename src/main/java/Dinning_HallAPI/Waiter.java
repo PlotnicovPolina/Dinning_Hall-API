@@ -15,8 +15,10 @@ public class Waiter implements Runnable {
     private static int count = 0;
     private ArrayList<Table> tables;
     private ArrayList<Order> orders = new ArrayList<>();
-    private static final  String POST_API_URL = "http://localhost:8081/order";
+    private ArrayList<Order> requestOrders = Handler.getOrders();
+    private static final  String POST_API_URL = "http://kitchen:8081/order";
     private static final TimeUnit unit = DinningHallApiApplication.getUnit();
+    private static final ArrayList<Integer> marks = new ArrayList<Integer>();
 
     Waiter (ArrayList<Table> tables)
     {
@@ -50,6 +52,23 @@ public class Waiter implements Runnable {
                     table.unLock();
                 }
             }
+
+
+            for (int i = 0; i < requestOrders.size(); i++) {
+                Order reqOrder = requestOrders.get(i);
+                for (int j = 0; j < orders.size(); j++) {
+                    Order order = orders.get(j);
+                    if( order.equals(reqOrder)){
+                        long timestamp = System.nanoTime()/1000000L;
+                        Table table = findTable(order.getTable_id());
+                        marks.add(table.evaluation(order,timestamp));
+                        System.out.println("Reputation = " + reputationCalculation());
+                        table.setStatus(Status.FREE);
+                        requestOrders.remove(reqOrder);
+                        orders.remove(order);
+                    }
+                }
+            }
             try {
                 unit.sleep(1);
             } catch (InterruptedException e) {
@@ -71,5 +90,25 @@ public class Waiter implements Runnable {
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> httpEntity = new HttpEntity<>(json,httpHeaders);
         restTemplate.postForObject(POST_API_URL, httpEntity, String.class);
+    }
+
+    private Table findTable(int table_id) {
+        Table init = null;
+        for (Table table : tables) {
+            if (table.getId() == table_id) {
+                init = table;
+                break;
+            }
+        }
+        return init;
+    }
+
+    private int reputationCalculation(){
+        int reputation = 0;
+        int sum = marks.stream().mapToInt(a -> a).sum();
+        if (marks.size() != 0){
+            reputation = sum /marks.size();
+        }
+        return reputation;
     }
 }
