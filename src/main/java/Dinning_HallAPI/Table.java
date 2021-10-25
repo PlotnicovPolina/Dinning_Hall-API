@@ -1,6 +1,7 @@
 package Dinning_HallAPI;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class Table {
@@ -10,6 +11,7 @@ public class Table {
     private Status status;
     private Order order;
     private ReentrantLock lock = new ReentrantLock();
+
 
     private static ArrayList<Table> tables = new ArrayList();
 
@@ -46,6 +48,28 @@ public class Table {
         }
         float maxWait = (float) (maxTimePreparation * 1.3);
         return order = new Order(items, priority, maxWait, id);
+    }
+
+    public int evaluation(Order order, long timestamp){
+        int mark = 0;
+        long Order_total_preparing_time = (timestamp -order.getPick_up_time()) / 1000 ;
+        double[] coefficients = new  double[]{ 1, 1.1, 1.2, 1.3, 1.4};
+        for (int i = 0; i < coefficients.length; i++) {
+            double coefficient = coefficients[i];
+            if ((order.getMax_wait() * coefficient) <= Order_total_preparing_time){
+                switch (i){
+                    case 0: mark = 5; break;
+                    case 1: mark = 4; break;
+                    case 2: mark = 3; break;
+                    case 3: mark = 2; break;
+                    case 4: mark = 1; break;
+                    default: mark = 0;
+                }
+            }
+
+        }
+        System.out.println(mark);
+        return mark;
     }
 
     private int TimePreparation (int id){
