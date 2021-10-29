@@ -11,12 +11,13 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 public class Waiter implements Runnable {
-    private int id = count++;
+    private final int id = count++;
     private static int count = 0;
-    private ArrayList<Table> tables;
-    private ArrayList<Order> orders = new ArrayList<>();
-    private ArrayList<Order> requestOrders = Handler.getOrders();
-    private static final  String POST_API_URL = "http://kitchen:8081/order";
+    private final ArrayList<Table> tables;
+    private final ArrayList<Order> orders = new ArrayList<>();
+    private final ArrayList<Order> requestOrders = Handler.getOrders();
+//    private static final  String POST_API_URL = "http://kitchen:8081/order";
+    private static final  String POST_API_URL = "http://localhost:8081/order";
     private static final TimeUnit unit = DinningHallApiApplication.getUnit();
     private static final ArrayList<Integer> marks = new ArrayList<Integer>();
 
@@ -52,7 +53,6 @@ public class Waiter implements Runnable {
                     table.unLock();
                 }
             }
-
 
             for (int i = 0; i < requestOrders.size(); i++) {
                 Order reqOrder = requestOrders.get(i);
@@ -103,11 +103,12 @@ public class Waiter implements Runnable {
         return init;
     }
 
-    private int reputationCalculation(){
-        int reputation = 0;
+    private float reputationCalculation(){
+        float reputation = 0;
         int sum = marks.stream().mapToInt(a -> a).sum();
+//        System.out.println(sum + " " + marks.size());
         if (marks.size() != 0){
-            reputation = sum /marks.size();
+            reputation = (float) sum / marks.size();
         }
         return reputation;
     }

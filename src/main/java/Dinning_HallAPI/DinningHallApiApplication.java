@@ -15,8 +15,8 @@ public class DinningHallApiApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(DinningHallApiApplication.class, args);
-		GenerateTables(5);
-		GenerateWaiters(3);
+		GenerateTables(10);
+		GenerateWaiters(6);
 
 		ClientGenerator clientGenerator = new ClientGenerator(tables);
 		new Thread(clientGenerator).start();
