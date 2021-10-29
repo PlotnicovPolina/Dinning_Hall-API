@@ -7,13 +7,13 @@ import java.util.concurrent.locks.ReentrantLock;
 public class Table {
 
     private static int count = 0;
-    private int id = count++;
+    private final int id = count++;
     private Status status;
     private Order order;
-    private ReentrantLock lock = new ReentrantLock();
+    private final ReentrantLock lock = new ReentrantLock();
 
 
-    private static ArrayList<Table> tables = new ArrayList();
+    private static final ArrayList<Table> tables = new ArrayList();
 
     Table (Status status){
         this.status =status;
@@ -53,10 +53,11 @@ public class Table {
     public int evaluation(Order order, long timestamp){
         int mark = 0;
         long Order_total_preparing_time = (timestamp -order.getPick_up_time()) / 1000 ;
+        System.out.println(Order_total_preparing_time);
         double[] coefficients = new  double[]{ 1, 1.1, 1.2, 1.3, 1.4};
         for (int i = 0; i < coefficients.length; i++) {
             double coefficient = coefficients[i];
-            if ((order.getMax_wait() * coefficient) <= Order_total_preparing_time){
+            if ((order.getMax_wait() * coefficient) >= Order_total_preparing_time){
                 switch (i){
                     case 0: mark = 5; break;
                     case 1: mark = 4; break;
@@ -65,6 +66,7 @@ public class Table {
                     case 4: mark = 1; break;
                     default: mark = 0;
                 }
+                break;
             }
 
         }

@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
+
 @RestController
 public class Handler {
     private static final ArrayList<Order> orders = new ArrayList<>();
@@ -18,10 +20,13 @@ public class Handler {
         return orders;
     }
 
+    private static final TimeUnit unit = DinningHallApiApplication.getUnit();
+
     @PostMapping(value = "/distribution", consumes = MediaType.APPLICATION_JSON_VALUE)
     public String get(@RequestBody Order order) {
         add(order);
         order.printOrderRequest();
         return "200";
     }
+
 }

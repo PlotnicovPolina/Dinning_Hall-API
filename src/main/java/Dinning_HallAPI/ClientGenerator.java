@@ -5,7 +5,7 @@ import java.util.concurrent.TimeUnit;
 
 public class ClientGenerator implements Runnable{
     private static final TimeUnit unit = DinningHallApiApplication.getUnit();
-    private ArrayList<Table> tables;
+    private final ArrayList<Table> tables;
     ClientGenerator(ArrayList<Table>tables){
         this.tables = tables;
     }
@@ -20,11 +20,10 @@ public class ClientGenerator implements Runnable{
                 System.out.println("Table " + tables.get(random).getId() + " is READY!");
             }
             try {
-                unit.sleep(1);
+                unit.sleep(4);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-
     }
 }
